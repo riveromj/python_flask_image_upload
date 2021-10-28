@@ -15,7 +15,7 @@ export const Register = () => {
 	const save = async () => {
 		const data = new FormData();
 		data.append("file", files[0]);
-		data.append("email", "mm225@gmail.com");
+		data.append("email", "mm22358@gmail.com");
 		data.append("password", "1151");
 
 		const response = await fetch(process.env.BACKEND_URL + "/api/register", {

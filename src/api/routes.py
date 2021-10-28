@@ -1,7 +1,7 @@
 """
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
-from flask import Flask, request, jsonify, url_for, Blueprint
+from flask import Flask, request, jsonify, url_for, Blueprint, redirect
 from api.models import db, User
 from api.utils import generate_sitemap, APIException
 
@@ -9,8 +9,14 @@ import cloudinary
 import cloudinary.uploader
 import cloudinary.api
 import os
+from datetime import datetime
+
+from flask import Flask, send_file
+from werkzeug.utils import secure_filename
+from werkzeug.datastructures import ImmutableMultiDict
 
 api = Blueprint('api', __name__)
+ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
 
 #Registrar ususario
 
@@ -30,15 +36,14 @@ def register():
     print(file_upload)
     if file_upload:
         print(file_upload.filename)
+
         #validar la extension del archivo
-        exten = file_upload.filename.replace(' ', '').rsplit('.')
-        print(exten)
-        if '.jpg' or '.png' or '.jpeg' in exten:
+        if file_upload.filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS:
             print("si")
-        #if (exten[1].lower()=='jpg' or exten[1].lower()=='png' or exten[1].lower()=='jpeg' ):
             upload_result = cloudinary.uploader.upload(file_upload)
             if upload_result:
                 image_url = upload_result.get('secure_url')
+                file_name = file_upload.filename
             
             user = User( email=email, password=password, is_active=True, image_url=image_url)
             user.save()
@@ -52,7 +57,7 @@ def register():
 
     
 @api.route('/hello', methods=['POST', 'GET'])
-def handle_hello():
+def handle_hello(app):
 
     response_body = {
         "message": "Hello! I'm a message that came from the backend"
@@ -78,17 +83,26 @@ def upload_file():
     print(file_upload)
     if file_upload:
         print(file_upload.filename)
+        file_name=file_upload.filename
         #validar la extension del archivo
-        exten = file_upload.filename.replace(' ', '').rsplit('.')
-        print(exten)
-        if (exten[1].lower()=='jpg' or exten[1].lower()=='png' or exten[1].lower()=='jpeg' ):
+        if file_upload.filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS:
+            print("si")
             upload_result = cloudinary.uploader.upload(file_upload)
             if upload_result:
                 user.image_url = upload_result.get('secure_url')
                 user.save()
+                if os.path.exists('./src/front/img/' + file_name):
+                    print("existe")
+                    now = datetime.now()
+                    url_Img = str(now).replace(' ', '') + file_name
+                print("no xiste")
+                url_Img = str(file_name).replace(' ', '')
+                filename = secure_filename(file_upload.filename)
+                file_upload.save(os.path.join('./src/front/img/', filename))
+                #file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
                 response_body = {
                         "message": "save image"
-                        }
+                        }     
                 return jsonify(response_body), 200
     return jsonify("Image format invalid"), 400
 
