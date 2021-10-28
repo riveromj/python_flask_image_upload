@@ -22,7 +22,7 @@ export const Home = () => {
 	};
 	return (
 		<div className="text-center mt-5">
-			<h1>Subida de Ficheros</h1>
+			<h1>Subida de Imagenes</h1>
 			<p>
 				<input type="file" onChange={upload} />
 				<input type="button" onClick={save} value="save" />
