@@ -13,8 +13,6 @@ export const Home = () => {
 	const save = async () => {
 		const data = new FormData();
 		data.append("file", files[0]);
-		data.append("email", "mm@gmail.com");
-		data.append("password", "111");
 
 		const response = await fetch(process.env.BACKEND_URL + "/api/upload-file", {
 			method: "POST",

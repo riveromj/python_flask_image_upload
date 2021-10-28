@@ -27,6 +27,7 @@ export const Register = () => {
 
 	return (
 		<div className="container">
+			<h1>Registro con Imagenes</h1>
 			<input type="text" placeholder="email" onChange={upload} />
 			<input type="text" placeholder="password" onChange={upload} />
 			<input type="file" onChange={upload} />
